@@ -23,10 +23,9 @@ def getStateId(state_id):
     """Route to get state with Id"""
 
     state = storage.get(State, state_id)
-    if state:
-        return jsonify(state.to_dict())
-    else:
-        return abort(404)
+    if state is None:
+        abort(404)
+    return jsonify(state.to_dict())
 
 @app_views.route('/states', methods=['POST'],
                  strict_slashes=False)
@@ -50,25 +49,24 @@ def deleteStateId(state_id):
     """Route to delete state with Id"""
 
     state = storage.get(State, state_id)
-    if state:
-        storage.delete(state)
-        storage.save()
-        return jsonify({}), 200
-    else:
+    if state is None:
         abort(404)
+    state.delete()
+    storage.save()
+    return jsonify({}), 200
 
 @app_views.route('/states/<state_id>', methods=['PUT'],
                  strict_slashes=False)
 def putState(state_id):
     """Route to update a state"""
-
     state = storage.get(State, state_id)
-    if not state:
+    if state is None:
         abort(404)
-    if not request.get_json():
-        return jsonify({'error': 'Not a JSON'}), 400
-    for key, value in request.get_json().items():
-        if key not in ['id', 'created_at', 'updated_at']:
+    res = request.get_json()
+    if type(res) != dict:
+        return abort(400, {'message': 'Not a JSON'})
+    for key, value in res.items():
+        if key not in ["id", "state_id", "created_at", "updated_at"]:
             setattr(state, key, value)
-    state.save()
+    storage.save()
     return jsonify(state.to_dict()), 200
