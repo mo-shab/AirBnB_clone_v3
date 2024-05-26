@@ -8,14 +8,14 @@ from models.state import State
 from api.v1.views import app_views
 
 
-@app_views.route('/states', strict_slacshes=False)
+@app_views.route('/states', strict_slashes=False)
 def get_all_states():
     """Route to get all states"""
 
-    states = storage.all(State)
+    states = storage.all(State).values()
     state_list = [state.to_dict() for state in states]
-    return jsonify(state_list)
 
+    return jsonify(state_list)
 
 @app_views.route('/states/<state_id>', strict_slashes=False)
 def getStateId(state_id):
@@ -27,10 +27,25 @@ def getStateId(state_id):
     else:
         return abort(404)
 
-
-@app_views.route('/states/<state_id>', methodes=['DELETE'],
+@app_views.route('/states', methods=['POST'],
                  strict_slashes=False)
-def getStateId(state_id):
+def postState():
+    """Route to post a new state"""
+
+    if request.content_type != 'application/json':
+        return jsonify({'error': 'Not a JSON'}), 404
+    if not request.get_json():
+        return jsonify({'error': 'Not a JSON'}), 400
+    kwargs = request.get_json()
+    if 'name' not in kwargs:
+        return jsonify({'error': 'Missing name'}), 400
+    state = State(**kwargs)
+    state.save()
+    return jsonify(state.to_dict()), 200
+
+@app_views.route('/states/<state_id>', methods=['DELETE'],
+                 strict_slashes=False)
+def deleteStateId(state_id):
     """Route to delete state with Id"""
 
     state = storage.get(State, state_id)
@@ -39,22 +54,9 @@ def getStateId(state_id):
         storage.save()
         return jsonify({}), 200
     else:
-        return abort(404)
+        abort(404)
 
-@app_views.route('/states', methodes=['POST'],
-                 strict_slashes=False)
-def postState():
-    """Route to post a new state"""
-
-    if not request.get_json():
-        return jsonify({'error': 'Not a JSON'}), 400
-    if 'name' not in request.get_json():
-        return jsonify({'error': 'Missing name'}), 400
-    new_state = State(**request.get_json())
-    new_state.save()
-    return jsonify(new_state.to_dict()), 200
-
-@app_views.route('/states/<state_id>', methodes=['PUT'],
+@app_views.route('/states/<state_id>', methods=['PUT'],
                  strict_slashes=False)
 def putState(state_id):
     """Route to update a state"""
