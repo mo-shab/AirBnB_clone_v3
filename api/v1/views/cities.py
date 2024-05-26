@@ -19,3 +19,14 @@ def getCityByStateId(state_id):
         return jsonify(cities)
     else:
         return abort(404)
+
+@app_views.route('/cities/<city_id>', methods=['GET'], strict_slashes=False)
+def getCityById(city_id):
+    """Route to get City by ID"""
+
+    city = storage.get(City, city_id)
+    if city:
+        return jsonify(city.to_dict())
+    else:
+        return abort(404)
+
