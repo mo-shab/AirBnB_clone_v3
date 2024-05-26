@@ -18,7 +18,7 @@ def get_all_states():
     return jsonify(state_list)
 
 
-@app_views.route('/states/<state_id>', methods=['GET'] strict_slashes=False)
+@app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
 def getStateId(state_id):
     """Route to get state with Id"""
 
