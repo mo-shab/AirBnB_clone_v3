@@ -64,7 +64,7 @@ def putState(state_id):
 
     state = storage.get(State, state_id)
     if not state:
-        return abort(404)
+        abort(404)
     if not request.get_json():
         return jsonify({'error': 'Not a JSON'}), 400
     for key, value in request.get_json().items():
