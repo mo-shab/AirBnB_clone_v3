@@ -34,7 +34,7 @@ def postState():
     """Route to post a new state"""
 
     if request.content_type != 'application/json':
-        return jsonify({'error': 'Not a JSON'}), 404
+        return jsonify({'error': 'Not a JSON'}), 400
     if not request.get_json():
         return jsonify({'error': 'Not a JSON'}), 400
     kwargs = request.get_json()
@@ -42,7 +42,7 @@ def postState():
         return jsonify({'error': 'Missing name'}), 400
     state = State(**kwargs)
     state.save()
-    return jsonify(state.to_dict()), 200
+    return jsonify(state.to_dict()), 201
 
 @app_views.route('/states/<state_id>', methods=['DELETE'],
                  strict_slashes=False)
