@@ -83,7 +83,7 @@ def putPlace(place_id):
         return jsonify({'error': 'Not a JSON'}), 400
     for key, value in kwargs.items():
         if key not in ['id', 'user_id', 'city_id', 'created at',
-                           'updated_at']:
+                       'updated_at']:
             setattr(place, key, value)
     place.save()
     return jsonify(place.to_dict()), 200
