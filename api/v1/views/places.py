@@ -3,11 +3,13 @@
 
 from flask import abort, jsonify, request
 from models import storage
-from models import City, Place, User
+from models.city import City
+from models.place import Place
+from models.user import User
 from api.v1.views import app_views
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
-                 slash_slashes=False)
+                 strict_slashes=False)
 def getPlaceByCityId(city_id):
     """Route to get all places by city id"""
 
@@ -68,7 +70,7 @@ def postPlace(city_id):
 
 
 @app_views.route('/places/<place_id>', methods=['PUT'],
-                 slash_slashes=False)
+                 strict_slashes=False)
 def putPlace(place_id):
     """Route to update a place"""
     place = storage.get(Place, place_id)
